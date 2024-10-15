@@ -1,3 +1,4 @@
+
 import 'package:alisons_app/model/login_model.dart';
 import 'package:alisons_app/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 class SignInScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final AuthModel _authModel = AuthModel(); 
+  final AuthModel _authService = AuthModel(); // Create an instance of AuthModel
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,9 @@ class SignInScreen extends StatelessWidget {
                       children: [
                         IconButton(
                           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pop(context); // Back navigation
+                          },
                         ),
                         Row(
                           children: [
@@ -125,8 +128,24 @@ class SignInScreen extends StatelessWidget {
                           onPressed: () async {
                             String email = _emailController.text;
                             String password = _passwordController.text;
+
+                            // Call the login method
+                            bool success = await _authService.login(email, password);
                             
-                            await _authModel.login(email, password); 
+                            if (success) {
+                              // Navigate to HomeScreen on successful login
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomeScreen(),
+                                ),
+                              );
+                            } else {
+                              // Show an error message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Login failed. Please try again.')),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.black,
@@ -151,7 +170,9 @@ class SignInScreen extends StatelessWidget {
 
                     Center(
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          // Navigate to Create Account screen if needed
+                        },
                         child: Text(
                           "Don't Have an account? Create Account",
                           style: TextStyle(
